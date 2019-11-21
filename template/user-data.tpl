@@ -21,13 +21,14 @@ ${logging}
 
 ${gitlab_runner}
 
-apt-get update
-apt-get install -y golang-go make git ca-certificates
-
-mkdir /work
-
+wget https://storage.googleapis.com/golang/go1.4.2.linux-amd64.tar.gz
+tar -xzf go1.4.2.linux-amd64.tar.gz -C /home/ec2-user
+export GOROOT=/home/ec2-user/go
+export PATH=$PATH:$GOROOT/bin 
+export GOBIN=$GOROOT/bin 
+mkdir /work 
 export GOPATH=/work
-export PATH=$PATH:/usr/local/go/bin
+export PATH=$GOPATH/bin:$PATH
 
 go get -u github.com/awslabs/amazon-ecr-credential-helper/ecr-login/cli/docker-credential-ecr-login
 
