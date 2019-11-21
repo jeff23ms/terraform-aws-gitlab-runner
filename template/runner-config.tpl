@@ -18,7 +18,15 @@ check_interval = 0
     image = "${runners_image}"
     privileged = ${runners_privileged}
     disable_cache = false
-    volumes = ["/cache"${runners_additional_volumes}]
+    volumes = [
+      "/cache"${runners_additional_volumes},
+      # So 'docker' client works in CI
+      "/var/run/docker.sock:/var/run/docker.sock",
+
+      # So 'docker push <ECR image> works in CI
+      "/root/.docker:/root/.docker",
+      "/usr/local/bin/docker-credential-ecr-login:/usr/local/bin/docker-credential-ecr-login"
+    ]
     shm_size = ${runners_shm_size}
     pull_policy = "${runners_pull_policy}"
   [runners.docker.tmpfs]
@@ -40,6 +48,8 @@ check_interval = 0
     MachineDriver = "amazonec2"
     MachineName = "runner-%s"
     MachineOptions = [
+      "amazonec2-iam-instance-profile=ops-runners-runners-instance-role",
+      "amazonec2-userdata=/home/gitlab-runner/userdata"
       "amazonec2-instance-type=${runners_instance_type}",
       "amazonec2-region=${aws_region}",
       "amazonec2-zone=${runners_aws_zone}",
